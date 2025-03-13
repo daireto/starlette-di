@@ -2,6 +2,7 @@
 ``inject_class`` decorators.
 """
 
+import warnings
 from collections.abc import Callable
 from functools import wraps
 from inspect import Parameter, isfunction, ismethod, signature
@@ -174,8 +175,16 @@ async def _update_kwargs(
 
     sig = signature(func)
     for param_name, param in sig.parameters.items():
-        if param_name == 'self' and is_method:
-            continue
+        if param_name == 'self':
+            if is_method:
+                continue
+
+            warnings.warn(
+                f"Parameter 'self' found in function {func.__qualname__!r}. "
+                f"You should either remove the 'self' parameter or use the "
+                "@inject_method decorator instead of @inject",
+                category=UserWarning,
+            )  # pragma: no cover
 
         if param_name == 'request' or param_name in kwargs:
             continue
@@ -240,7 +249,8 @@ def _update_constructor_kwargs(
     sig = signature(orig_init)
     for param_name, param in sig.parameters.items():
         if (
-            param_name in ('self', 'scope', 'receive', 'send', 'service_provider')
+            param_name
+            in ('self', 'scope', 'receive', 'send', 'service_provider')
             or param_name in kwargs
         ):
             continue
