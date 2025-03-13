@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          coverage run -m pytest -p no:cacheprovider
+          coverage run -m pytest
           coverage xml
           coverage report
 

@@ -2,6 +2,8 @@
 class to handle dependency injection.
 """
 
+from uuid import uuid4
+
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .definitions import SERVICE_PROVIDER_ARG_NAME
@@ -53,7 +55,7 @@ class DependencyInjectionMiddleware:
             await self.app(scope, receive, send)  # pragma: no cover
             return None  # pragma: no cover
 
-        scope_id = str(id(scope))
+        scope_id = str(uuid4())
         scoped_provider = self.service_provider.create_scope(scope_id)
         scope[SERVICE_PROVIDER_ARG_NAME] = scoped_provider
 
