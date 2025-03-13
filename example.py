@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from pydantic import BaseModel
 from starlette.applications import Starlette
 from starlette.endpoints import HTTPEndpoint
 from starlette.middleware import Middleware
@@ -15,6 +16,17 @@ from starlette_di import (
     inject_class,
     inject_method,
 )
+
+
+# Models
+class User(BaseModel):
+    name: str
+    age: int
+
+
+class Product(BaseModel):
+    name: str
+    price: float
 
 
 # Services
@@ -91,12 +103,24 @@ class ServicesTesterEndpoint(HTTPEndpoint):
         return JSONResponse(services_tester.test())
 
 
+@inject
+async def create_user(request: Request, user: User):
+    return JSONResponse({'name': user.name, 'age': user.age})
+
+
+@inject
+async def update_product(request: Request, user: User, product: Product):
+    return JSONResponse({'user_name': user.name, 'product_name': product.name})
+
+
 # Application
 app = Starlette(
     routes=[
         Route('/greet', greet),
         Route('/counter', CounterEndpoint),
         Route('/test-services', ServicesTesterEndpoint),
+        Route('/users', create_user, methods=['POST']),
+        Route('/products', update_product, methods=['POST']),
     ],
     middleware=[
         Middleware(DependencyInjectionMiddleware, service_provider=provider),
@@ -121,5 +145,16 @@ response = client.get('/test-services')
 service_ids2 = response.json()
 assert service_ids1['greeter_id'] != service_ids2['greeter_id']
 assert service_ids1['counter_id'] == service_ids2['counter_id']
+
+data = {'name': 'Jane Doe', 'age': 25}
+response = client.post('/users', json=data)
+assert response.json() == {'name': 'Jane Doe', 'age': 25}
+
+data = {
+    'user': {'name': 'Jane Doe', 'age': 25},
+    'product': {'name': 'Computer', 'price': 225.0},
+}
+response = client.post('/products', json=data)
+assert response.json() == {'user_name': 'Jane Doe', 'product_name': 'Computer'}
 
 print('All tests passed!')
