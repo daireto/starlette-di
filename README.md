@@ -119,7 +119,13 @@ services.add_transient(IGreeter, greeter_factory)
 
 ### 3. Inject the service
 
-You can inject the service into an endpoint function, method or class.
+Use the `@inject`, `@inject_method` and `@inject_class` decorators to inject
+the service into an endpoint function, method or class respectively.
+
+> [!WARNING]
+> Only asynchronous endpoints can be decorated.
+> Trying to decorate a synchronous endpoint will raise
+> a `TypeError`.
 
 #### 3.1. Inject into an endpoint function
 
