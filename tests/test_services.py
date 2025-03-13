@@ -59,43 +59,40 @@ def test_service_collection(test_client):
 
 def test_transient_service(test_client):
     # first request
-    response = test_client.get('/test-services')
-    data1 = response.json()
-    last_id = data1['greeter_id']
-    assert last_id != data1['tester_ids']['greeter_id']
+    response1 = test_client.get('/test-services')
+    data1 = response1.json()
+    assert data1['greeter_id'] != data1['tester_ids']['greeter_id']
 
     # second request
-    response = test_client.get('/test-services')
-    data2 = response.json()
-    assert data2['greeter_id'] != last_id
+    response2 = test_client.get('/test-services')
+    data2 = response2.json()
+    assert data2['greeter_id'] != data1['greeter_id']
     assert data2['greeter_id'] != data2['tester_ids']['greeter_id']
 
 
 def test_scoped_service(test_client):
     # first request
-    response = test_client.get('/test-services')
-    data1 = response.json()
-    last_id = data1['scoped_id']
-    assert last_id == data1['tester_ids']['scoped_id']
+    response1 = test_client.get('/test-services')
+    data1 = response1.json()
+    assert data1['scoped_id'] == data1['tester_ids']['scoped_id']
 
     # second request
-    response = test_client.get('/test-services')
-    data2 = response.json()
-    assert data2['scoped_id'] != last_id
+    response2 = test_client.get('/test-services')
+    data2 = response2.json()
+    assert data2['scoped_id'] != data1['scoped_id']
     assert data2['scoped_id'] == data2['tester_ids']['scoped_id']
 
 
 def test_singleton_service(test_client):
     # first request
-    response = test_client.get('/test-services')
-    data1 = response.json()
-    last_id = data1['counter_id']
-    assert last_id == data1['tester_ids']['counter_id']
+    response1 = test_client.get('/test-services')
+    data1 = response1.json()
+    assert data1['counter_id'] == data1['tester_ids']['counter_id']
 
     # second request
-    response = test_client.get('/test-services')
-    data3 = response.json()
-    assert data3['counter_id'] == last_id
+    response2 = test_client.get('/test-services')
+    data3 = response2.json()
+    assert data3['counter_id'] == data1['counter_id']
     assert data3['counter_id'] == data3['tester_ids']['counter_id']
 
 
