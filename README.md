@@ -22,31 +22,44 @@
     </a>
 </p>
 
-A dependency injection library for Starlette.
+Starlette DI is a dependency injection library for Starlette applications.
+It simplifies dependency management by allowing services to be injected using
+Scoped, Transient, and Singleton lifetimes (similar to .NET Core). Also,
+enables automatic injection of route parameters, and request bodies using
+Pydantic models, making API development more efficient, and structured.
 
 <!-- omit in toc -->
 ## Table of Contents
+- [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Tutorial](#tutorial)
     - [1. Create a service](#1-create-a-service)
-    - [2. Create a service collection](#2-create-a-service-collection)
-    - [3. Inject the service](#3-inject-the-service)
-        - [3.1. Inject into an endpoint function](#31-inject-into-an-endpoint-function)
-        - [3.2. Inject into an endpoint method](#32-inject-into-an-endpoint-method)
-        - [3.3. Inject into an endpoint class](#33-inject-into-an-endpoint-class)
-    - [4. Use the DependencyInjectionMiddleware](#4-use-the-dependencyinjectionmiddleware)
-    - [5. Make a request to the endpoint](#5-make-a-request-to-the-endpoint)
+    - [2. Configure dependency injection](#2-configure-dependency-injection)
+    - [3. Injecting services](#3-injecting-services)
+    - [4. Inject path params](#4-inject-path-params)
+    - [5. Inject request body](#5-inject-request-body)
+    - [6. Use the DependencyInjectionMiddleware](#6-use-the-dependencyinjectionmiddleware)
     - [Full example](#full-example)
-- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
 - [Support](#support)
+
+## Features
+
+- **Scoped, Transient, and Singleton**: Dependency injection with three service lifetimes, similar to .NET Core.
+- **Service Injection**: Supports injecting services into functions, methods, and endpoint classes in Starlette.
+- **Route Parameter Injection**: Automatically extracts URL parameters in controllers.
+- **Request Body Injection**: Maps JSON request body data directly to Pydantic models.
+- **Dependency Injection Middleware**: Provides a middleware layer to manage dependency injection throughout the request lifecycle.
+- **Pydantic Compatibility**: Leverages Pydantic for data validation, and conversion.
+- **Decorators for Endpoints**: Simplifies injection with `@inject`, `@inject_method`, and `@inject_class`.
 
 ## Requirements
 
 - `Python>=3.10`
 - `Starlette>=0.38.0`
+- `Pydantic>=1.10.21`
 
 ## Installation
 
@@ -61,11 +74,10 @@ pip install starlette-di
 
 ### 1. Create a service
 
-Create a service to be injected, for example:
+Define a service that can be injected:
 
 ```python
 from abc import ABC, abstractmethod
-
 
 class IGreeter(ABC):
     @abstractmethod
@@ -77,26 +89,22 @@ class Greeter(IGreeter):
         return 'Hello!'
 ```
 
-> [!NOTE]
-> You can also inject a factory function:
-> ```python
-> def greeter_factory() -> IGreeter:
->     return Greeter()
-> ```
+Alternatively, use a factory function:
 
-### 2. Create a service collection
+```python
+def greeter_factory() -> IGreeter:
+    return Greeter()
+```
 
-Create a service collection, add the service and build a service provider.
+### 2. Configure dependency injection
 
-The service provider is used to resolve dependencies.
-
-There are three types of services: singleton, scoped and transient:
+Use a `ServiceCollection` to register services with different lifetimes:
 
 - **Singleton**: one instance for the application lifetime.
 - **Scoped**: one instance per request.
 - **Transient**: new instance created each time it's requested.
 
-For example:
+Example:
 
 ```python
 from starlette_di import ServiceCollection
@@ -108,7 +116,7 @@ services.add_transient(IGreeter, Greeter)
 provider = services.build_provider()
 ```
 
-This is the same for factory functions:
+Using a factory function:
 
 ```python
 def greeter_factory() -> IGreeter:
@@ -117,9 +125,9 @@ def greeter_factory() -> IGreeter:
 services.add_transient(IGreeter, greeter_factory)
 ```
 
-### 3. Inject the service
+### 3. Injecting services
 
-Use the `@inject`, `@inject_method` and `@inject_class` decorators to inject
+Use the `@inject`, `@inject_method`, and `@inject_class` decorators to inject
 the service into an endpoint function, method or class respectively.
 
 > [!WARNING]
@@ -127,13 +135,14 @@ the service into an endpoint function, method or class respectively.
 > Trying to decorate a synchronous endpoint will raise
 > a `TypeError`.
 
-#### 3.1. Inject into an endpoint function
+**Inject into an endpoint function**
 
 Inject the service into an endpoint function using the `@inject` decorator:
 
 ```python
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+
 from starlette_di import inject
 
 @inject
@@ -141,7 +150,7 @@ async def greet(request: Request, greeter: IGreeter):
     return JSONResponse({'message': greeter.greet()})
 ```
 
-#### 3.2. Inject into an endpoint method
+**Inject into an endpoint method**
 
 Inject the service into an endpoint method using the `@inject_method` decorator:
 
@@ -149,8 +158,8 @@ Inject the service into an endpoint method using the `@inject_method` decorator:
 from starlette.requests import Request
 from starlette.endpoints import HTTPEndpoint
 from starlette.responses import JSONResponse
-from starlette_di import inject_method
 
+from starlette_di import inject_method
 
 class GreetEndpoint(HTTPEndpoint):
     @inject_method
@@ -164,6 +173,8 @@ class GreetEndpoint(HTTPEndpoint):
 > `pass_request` argument to `False`:
 > ```python
 > from starlette.responses import JSONResponse
+> from starlette.endpoints import HTTPEndpoint
+>
 > from starlette_di import inject_method
 >
 > class GreetEndpoint(HTTPEndpoint):
@@ -172,14 +183,15 @@ class GreetEndpoint(HTTPEndpoint):
 >         return JSONResponse({'message': greeter.greet()})
 > ```
 
-#### 3.3. Inject into an endpoint class
+**Inject into an endpoint class**
 
 Inject the service into an endpoint class using the `@inject_class` decorator:
 
 ```python
 from starlette.responses import JSONResponse
-from starlette_di import inject_class
+from starlette.endpoints import HTTPEndpoint
 
+from starlette_di import inject_class
 
 @inject_class
 class GreetEndpoint(HTTPEndpoint):
@@ -197,12 +209,87 @@ class GreetEndpoint(HTTPEndpoint):
 > To learn more about endpoints, see the
 > [Starlette documentation](https://www.starlette.io/endpoints/).
 
-### 4. Use the DependencyInjectionMiddleware
+### 4. Inject path params
+
+You can inject request path parameters:
+
+```python
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+from starlette.routing import Route
+
+from starlette_di import inject
+
+@inject
+async def greet_person(self, request: Request, name: str):
+    return JSONResponse({'message': f'Hello {name}!'})
+
+routes = [
+    Route('/greet/{name:str}', greet_person),
+]
+```
+
+### 5. Inject request body
+
+Also, you can inject the request body using
+[Pydantic models](https://docs.pydantic.dev/latest/concepts/models/#basic-model-usage).
+If there's only one Pydantic model parameter, the whole JSON body is injected.
+Otherwise, each parameter is extracted from the JSON body using its name.
+
+**Only one parameter**:
+
+```python
+from pydantic import BaseModel
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
+class User(BaseModel):
+    name: str
+    age: int
+
+@inject
+async def create_user(request: Request, user: User):
+    return JSONResponse({'name': user.name, 'age': user.age})
+
+# Example request
+# {'name': 'Jane Doe', 'age': 25}
+```
+
+**Two or more parameters**
+
+```python
+from pydantic import BaseModel
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
+class User(BaseModel):
+    name: str
+    age: int
+
+class Product(BaseModel):
+    name: str
+    price: float
+
+@inject
+async def update_product(request: Request, user: User, product: Product):
+    return JSONResponse({'user_name': user.name, 'product_name': product.name})
+
+# Example request
+# {
+#     'user': {'name': 'Jane Doe', 'age': 25},
+#     'product': {'name': 'Computer', 'price': 225.0},
+# }
+```
+
+> [!WARNING]
+> The request body must be a JSON dict. Otherwise, it will raise a `ValueError`.
+
+### 6. Use the DependencyInjectionMiddleware
 
 Use the `DependencyInjectionMiddleware` to handle dependency injection.
 
 This middleware sets up the request scope for dependency injection by creating
-a scoped service provider and adding it to the request scope.
+a scoped service provider, and adding it to the request scope.
 
 Pass the service provider built in [here](#2-create-a-service-collection) to
 the `service_provider` argument of the middleware:
@@ -231,41 +318,19 @@ app = Starlette(
 > # <starlette_di.service_provider.ScopedServiceProvider object at 0x00000...>
 > ```
 
-### 5. Make a request to the endpoint
-
-Make a request to the endpoint:
-
-```python
-from starlette.testclient import TestClient
-
-client = TestClient(app)
-response = client.get('/greet')
-print(response.json())
-# {'message': 'Hello!'}
-```
-
 ### Full example
 
-You can find the full example [here](example.py).
-
-```
-> python example.py
-All tests passed!
-```
-
-## Documentation
-
-Find the complete documentation [here](https://daireto.github.io/starlette-di/).
+Find the full tutorial example [here](example.py).
 
 ## Contributing
 
-Please read the [contribution guidelines](CONTRIBUTING.md).
+See the [contribution guidelines](CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE)
 file for details.
 
 ## Support
 
-If you find this project useful, give it a ⭐ on GitHub to show your support!
+If you find this project useful, give it a ⭐ on GitHub!
