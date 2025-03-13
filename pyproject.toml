@@ -9,7 +9,14 @@ authors = [{ name = "Dairo Mosquera", email = "dairoandres115@outlook.com" }]
 description = "A dependency injection library for Starlette."
 readme = "README.md"
 requires-python = ">=3.10"
-keywords = ["starlette", "dependency injection", "di", "starlette-di"]
+keywords = [
+    "starlette-di",
+    "dependency injection",
+    "di",
+    "starlette",
+    "starlette extension",
+    "starlette middleware",
+]
 classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
