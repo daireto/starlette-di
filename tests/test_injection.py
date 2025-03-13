@@ -59,7 +59,6 @@ def test_service_provider_kwarg():
 
 def test_path_param(test_client):
     response = test_client.get('/all/Jane')
-    print(response.text)
     data = response.json()
     assert data['message'] == 'Hello, Jane!'
 

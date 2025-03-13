@@ -234,8 +234,8 @@ from starlette.testclient import TestClient
 
 client = TestClient(app)
 response = client.get('/greet')
-print(response.text)
-# {"message": "Hello!"}
+print(response.json())
+# {'message': 'Hello!'}
 ```
 
 ### Full example
