@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "starlette-di"
+dynamic = ["version"]
+authors = [{ name = "Dairo Mosquera", email = "dairoandres115@outlook.com" }]
+description = "A dependency injection library for Starlette."
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["starlette", "dependency injection", "di", "starlette-di"]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Database",
+]
+dependencies = ["starlette>=0.38.0"]
+
+[project.urls]
+Homepage = "https://github.com/daireto/starlette-di"
+Documentation = "https://daireto.github.io/starlette-di/"
+Issues = "https://github.com/daireto/starlette-di/issues"
+Repository = "https://github.com/daireto/starlette-di"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+include = ["starlette_di*"]
+exclude = ["tests*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "starlette_di.__version__" }

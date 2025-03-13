@@ -1,0 +1,5 @@
+coverage>=7.6.12
+pydantic>=2.10.6
+pytest>=8.3.5
+httpx>=0.28.1
+starlette>=0.38.0
