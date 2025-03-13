@@ -13,3 +13,5 @@ __all__ = [
     'Service',
     'ServiceProvider',
 ]
+
+__version__ = '0.1.0'
