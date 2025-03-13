@@ -14,8 +14,8 @@
     <a href="https://github.com/daireto/starlette-di/actions" target="_blank">
         <img src="https://github.com/daireto/starlette-di/actions/workflows/publish.yml/badge.svg" alt="Publish">
     </a>
-    <a href='https://coveralls.io/github/daireto/starlette-di?branch=main'>
-        <img src='https://coveralls.io/repos/github/daireto/starlette-di/badge.svg?branch=main' alt='Coverage Status' />
+    <a href='https://coveralls.io/github/daireto/starlette_di?branch=main'>
+        <img src='https://coveralls.io/repos/github/daireto/starlette_di/badge.svg?branch=main' alt='Coverage Status' />
     </a>
     <a href="/LICENSE" target="_blank">
         <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
