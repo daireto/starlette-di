@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "starlette-di"
 dynamic = ["version"]
 authors = [{ name = "Dairo Mosquera", email = "dairoandres115@outlook.com" }]
-description = "A dependency injection library for Starlette."
+description = "A dependency injection library for Starlette. It supports Scoped, Transient, and Singleton lifetimes, route parameter and request body injection via Pydantic, and seamless integration with Starlette using decorators and middleware."
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = [
@@ -28,7 +28,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Database",
 ]
-dependencies = ["pydantic>=2.10.6", "starlette>=0.38.0"]
+dependencies = ["pydantic>=1.10.21", "starlette>=0.38.0"]
 
 [project.urls]
 Homepage = "https://github.com/daireto/starlette-di"
