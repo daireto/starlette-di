@@ -29,11 +29,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests with coverage
-        env:
-          PYTHONUNBUFFERED: "1"
-          PYTHONMALLOC: "debug"
         run: |
-          coverage run -m pytest
+          coverage run -m pytest --gc-collect
           coverage xml
           coverage report
 
