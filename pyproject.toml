@@ -28,11 +28,10 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Database",
 ]
-dependencies = ["starlette>=0.38.0"]
+dependencies = ["pydantic>=2.10.6", "starlette>=0.38.0"]
 
 [project.urls]
 Homepage = "https://github.com/daireto/starlette-di"
-Documentation = "https://daireto.github.io/starlette-di/"
 Issues = "https://github.com/daireto/starlette-di/issues"
 Repository = "https://github.com/daireto/starlette-di"
 
