@@ -60,43 +60,43 @@ def test_service_collection(test_client):
 def test_transient_service(test_client):
     # first request
     response = test_client.get('/test-services')
-    data = response.json()
-    last_id = data['greeter_id']
-    assert last_id != data['tester_ids']['greeter_id']
+    data1 = response.json()
+    last_id = data1['greeter_id']
+    assert last_id != data1['tester_ids']['greeter_id']
 
     # second request
     response = test_client.get('/test-services')
-    data = response.json()
-    assert data['greeter_id'] != last_id
-    assert data['greeter_id'] != data['tester_ids']['greeter_id']
+    data2 = response.json()
+    assert data2['greeter_id'] != last_id
+    assert data2['greeter_id'] != data2['tester_ids']['greeter_id']
 
 
 def test_scoped_service(test_client):
     # first request
     response = test_client.get('/test-services')
-    data = response.json()
-    last_id = data['scoped_id']
-    assert last_id == data['tester_ids']['scoped_id']
+    data1 = response.json()
+    last_id = data1['scoped_id']
+    assert last_id == data1['tester_ids']['scoped_id']
 
     # second request
     response = test_client.get('/test-services')
-    data = response.json()
-    assert data['scoped_id'] != last_id
-    assert data['scoped_id'] == data['tester_ids']['scoped_id']
+    data2 = response.json()
+    assert data2['scoped_id'] != last_id
+    assert data2['scoped_id'] == data2['tester_ids']['scoped_id']
 
 
 def test_singleton_service(test_client):
     # first request
     response = test_client.get('/test-services')
-    data = response.json()
-    last_id = data['counter_id']
-    assert last_id == data['tester_ids']['counter_id']
+    data1 = response.json()
+    last_id = data1['counter_id']
+    assert last_id == data1['tester_ids']['counter_id']
 
     # second request
     response = test_client.get('/test-services')
-    data = response.json()
-    assert data['counter_id'] == last_id
-    assert data['counter_id'] == data['tester_ids']['counter_id']
+    data3 = response.json()
+    assert data3['counter_id'] == last_id
+    assert data3['counter_id'] == data3['tester_ids']['counter_id']
 
 
 def test_factory_functions():
