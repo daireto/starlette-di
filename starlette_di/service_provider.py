@@ -9,7 +9,9 @@ to resolve scoped services.
 from collections.abc import Callable
 from dataclasses import dataclass
 from inspect import Parameter, isclass, signature
-from typing import Any, Generic, Literal, TypeVar
+from typing import Any, Generic, TypeVar
+
+from .types import Implementation, Lifetime
 
 T = TypeVar('T', bound=object)
 
@@ -18,10 +20,10 @@ T = TypeVar('T', bound=object)
 class Service(Generic[T]):
     """Service information."""
 
-    lifetime: Literal['singleton', 'scoped', 'transient']
+    lifetime: Lifetime
     """Lifetime of the service."""
 
-    implementation: type[T] | Callable[..., T] | None
+    implementation: Implementation
     """Implementation of the service.
 
     It can be a class or a factory function.

@@ -2,12 +2,8 @@
 to register services.
 """
 
-from collections.abc import Callable
-from typing import Literal, TypeVar
-
 from .service_provider import Service, ServiceProvider
-
-T = TypeVar('T')
+from .types import Implementation, Lifetime, T
 
 
 class ServiceCollection:
@@ -49,7 +45,7 @@ class ServiceCollection:
     def add_singleton(
         self,
         service_type: type[T],
-        implementation: type[T] | Callable[..., T] | None = None,
+        implementation: Implementation = None,
     ):
         """Register a service as a singleton
         (one instance for the application lifetime).
@@ -61,7 +57,7 @@ class ServiceCollection:
         ----------
         service_type : type[T]
             Service type.
-        implementation : type[T] | Callable[..., T] | None, optional
+        implementation : Implementation, optional
             Implementation type or factory function, by default None.
 
         Returns
@@ -86,7 +82,7 @@ class ServiceCollection:
     def add_transient(
         self,
         service_type: type[T],
-        implementation: type[T] | Callable[..., T] | None = None,
+        implementation: Implementation = None,
     ):
         """Register a service as transient
         (new instance created each time it's requested).
@@ -98,7 +94,7 @@ class ServiceCollection:
         ----------
         service_type : type[T]
             Service type.
-        implementation : type[T] | Callable[..., T] | None, optional
+        implementation : Implementation, optional
             Implementation type or factory function, by default None.
 
         Returns
@@ -123,7 +119,7 @@ class ServiceCollection:
     def add_scoped(
         self,
         service_type: type[T],
-        implementation: type[T] | Callable[..., T] | None = None,
+        implementation: Implementation = None,
     ):
         """Register a service as scoped
         (one instance per request).
@@ -135,7 +131,7 @@ class ServiceCollection:
         ----------
         service_type : type[T]
             Service type.
-        implementation : type[T] | Callable[..., T] | None, optional
+        implementation : Implementation, optional
             Implementation type or factory function, by default None.
 
         Returns
@@ -159,9 +155,9 @@ class ServiceCollection:
 
     def add(
         self,
-        lifetime: Literal['singleton', 'scoped', 'transient'],
+        lifetime: Lifetime,
         service_type: type[T],
-        implementation: type[T] | Callable[..., T] | None = None,
+        implementation: Implementation = None,
     ):
         """Registers a service.
 
@@ -174,7 +170,7 @@ class ServiceCollection:
             Lifetime of the service.
         service_type : type[T]
             Service type.
-        implementation : type[T] | Callable[..., T] | None, optional
+        implementation : Implementation, optional
             Implementation type or factory function, by default None.
 
         Returns
